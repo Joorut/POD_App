@@ -12,14 +12,15 @@ WORKDIR /app
 COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
 # Copy backend
-COPY backend/requirements.txt ./backend/
-RUN pip install --no-cache-dir -r backend/requirements.txt
-
 COPY backend ./backend
+WORKDIR /app/backend
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Set environment
 ENV PORT=8000
 ENV PYTHONUNBUFFERED=1
 
-# Start command
-CMD ["/bin/sh", "-c", "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"]
+# Start uvicorn from backend directory
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
