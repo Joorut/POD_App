@@ -37,12 +37,9 @@ def decode_token(token: str):
     except JWTError:
         return None
 
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = None):
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
     from database import get_db
     from models import User
-    
-    if db is None:
-        db = next(get_db())
     
     token = credentials.credentials
     payload = decode_token(token)
