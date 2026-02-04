@@ -38,25 +38,32 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @app.post("/api/auth/register", response_model=UserResponse)
 async def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    # Check if user exists
-    existing = db.query(User).filter(
-        (User.username == user_data.username) | (User.email == user_data.email)
-    ).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="Username or email already exists")
-    
-    # Create user
-    new_user = User(
-        username=user_data.username,
-        email=user_data.email,
-        full_name=user_data.full_name,
-        hashed_password=get_password_hash(user_data.password),
-        role=user_data.role
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+    try:
+        # Check if user exists
+        existing = db.query(User).filter(
+            (User.username == user_data.username) | (User.email == user_data.email)
+        ).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Username or email already exists")
+        
+        # Create user
+        new_user = User(
+            username=user_data.username,
+            email=user_data.email,
+            full_name=user_data.full_name,
+            hashed_password=get_password_hash(user_data.password),
+            role=user_data.role
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return new_user
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        print(f"Registration error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
 
 @app.post("/api/auth/login", response_model=LoginResponse)
