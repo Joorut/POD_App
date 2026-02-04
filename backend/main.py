@@ -33,7 +33,7 @@ app.add_middleware(
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "data", "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Serve frontend static files
+# Serve frontend static files (Dockerfile copies to /app/frontend/dist, we're in /app/backend)
 frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
 if os.path.exists(frontend_dist):
     app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")

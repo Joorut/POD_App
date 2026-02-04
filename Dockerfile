@@ -1,8 +1,10 @@
 # Build stage - Frontend
 FROM node:18-alpine AS frontend-build
-WORKDIR /app
-COPY frontend ./frontend
-RUN cd frontend && npm install && npm run build
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend .
+RUN npm run build
 
 # Final stage - Backend with Python
 FROM python:3.11-slim
