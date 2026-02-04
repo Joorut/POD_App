@@ -13,7 +13,7 @@ COPY --from=frontend-build /app/frontend/dist ./frontend/dist
 
 # Copy backend
 COPY backend/requirements.txt ./backend/
-RUN cd backend && pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r backend/requirements.txt
 
 COPY backend ./backend
 
@@ -22,4 +22,4 @@ ENV PORT=8000
 ENV PYTHONUNBUFFERED=1
 
 # Start command
-CMD cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+CMD ["/bin/sh", "-c", "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"]
