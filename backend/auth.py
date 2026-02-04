@@ -7,6 +7,9 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 import os
 
+from database import get_db
+from models import User
+
 SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "your-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
@@ -38,9 +41,6 @@ def decode_token(token: str):
         return None
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
-    from database import get_db
-    from models import User
-    
     token = credentials.credentials
     payload = decode_token(token)
     
