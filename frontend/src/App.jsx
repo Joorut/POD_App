@@ -6,7 +6,7 @@ import PODListPage from './pages/PODListPage';
 import PODDetailPage from './pages/PODDetailPage';
 import LoginPage from './pages/LoginPage';
 
-const API_BASE = import.meta.env.VITE_POD_API || 'http://localhost:8001';
+const API_BASE = import.meta.env.VITE_POD_API || '';
 
 // Auth context
 export const AuthContext = React.createContext(null);

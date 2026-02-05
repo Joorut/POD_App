@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../App';
 
-const API_BASE = import.meta.env.VITE_POD_API || 'http://localhost:8001';
+const API_BASE = import.meta.env.VITE_POD_API || '';
 
 export default function PODCreatePage() {
   const navigate = useNavigate();
