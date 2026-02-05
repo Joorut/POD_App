@@ -1,6 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import SignatureCanvas from 'react-signature-canvas';
 import { AuthContext } from '../App';
 
 const API_BASE = import.meta.env.VITE_POD_API || '';
@@ -8,6 +9,7 @@ const API_BASE = import.meta.env.VITE_POD_API || '';
 export default function PODCreatePage() {
   const navigate = useNavigate();
   const user = useContext(AuthContext);
+  const signatureRef = useRef(null);
   const [formData, setFormData] = useState({
     case_number: '',
     driver_name: user?.full_name || '',
@@ -37,21 +39,37 @@ export default function PODCreatePage() {
     setPhotos(Array.from(e.target.files));
   };
 
+  const clearSignature = () => {
+    signatureRef.current?.clear();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
+      // Upload photos
       const photoPaths = [];
       for (const photo of photos) {
         const path = await uploadFile(photo);
         photoPaths.push(path);
       }
 
+      // Upload signature if exists
+      let signaturePath = '';
+      if (signatureRef.current && !signatureRef.current.isEmpty()) {
+        const signatureBlob = await new Promise((resolve) => {
+          signatureRef.current.getTrimmedCanvas().toBlob(resolve, 'image/png');
+        });
+        const signatureFile = new File([signatureBlob], 'signature.png', { type: 'image/png' });
+        signaturePath = await uploadFile(signatureFile);
+      }
+
       const payload = {
         ...formData,
         photo_paths: photoPaths,
+        signature_path: signaturePath,
       };
 
       await axios.post(`${API_BASE}/api/pod`, payload, {
@@ -160,6 +178,32 @@ export default function PODCreatePage() {
               {photos.length > 0 && (
                 <p className="text-sm text-gray-600 mt-2">{photos.length} foto(er) valgt</p>
               )}
+            </div>
+
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-gray-700 font-semibold">Kunde Underskrift</label>
+                <button
+                  type="button"
+                  onClick={clearSignature}
+                  className="text-sm text-red-600 hover:text-red-700 font-semibold"
+                >
+                  Ryd Underskrift
+                </button>
+              </div>
+              <div className="border-2 border-gray-300 rounded-lg bg-white">
+                <SignatureCanvas
+                  ref={signatureRef}
+                  canvasProps={{
+                    className: 'w-full h-48 rounded-lg',
+                    style: { touchAction: 'none' }
+                  }}
+                  backgroundColor="rgb(255, 255, 255)"
+                />
+              </div>
+              <p className="text-sm text-gray-500 mt-2">
+                Tegn kundens underskrift her (brug mus eller touch)
+              </p>
             </div>
 
             <div className="flex gap-4">

@@ -5,6 +5,7 @@ import PODCreatePage from './pages/PODCreatePage';
 import PODListPage from './pages/PODListPage';
 import PODDetailPage from './pages/PODDetailPage';
 import LoginPage from './pages/LoginPage';
+import AdminUserManagement from './pages/AdminUserManagement';
 
 const API_BASE = import.meta.env.VITE_POD_API || '';
 
@@ -69,6 +70,14 @@ function App() {
           element={
             <ProtectedRoute>
               <PODDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute>
+              <AdminUserManagement />
             </ProtectedRoute>
           }
         />

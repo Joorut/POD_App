@@ -65,6 +65,14 @@ export default function PODListPage() {
             >
               + Ny POD
             </button>
+            {user?.role === 'admin' && (
+              <button
+                onClick={() => navigate('/admin/users')}
+                className="bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded font-semibold"
+              >
+                👤 Brugere
+              </button>
+            )}
             <span className="text-white">{user?.full_name}</span>
             <button
               onClick={handleLogout}
